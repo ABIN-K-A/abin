@@ -1,0 +1,74 @@
+def calculate_aqi_pm25(pm25):
+    """Simplified AQI calculation for PM2.5 (based on typical breakpoints)"""
+    if pm25 is None or pm25 < 0:
+        raise ValueError("Invalid PM2.5 value")
+
+    if pm25 <= 30:
+        return 50
+    elif pm25 <= 60:
+        return 100
+    elif pm25 <= 90:
+        return 200
+    else:
+        return 300
+
+def classify_aqi(aqi):
+    """Classify AQI into categories"""
+    if aqi <= 50:
+        return "Good"
+    elif aqi <= 100:
+        return "Moderate"
+    elif aqi <= 200:
+        return "Poor"
+    else:
+        return "Very Poor"
+
+def get_air_quality(pm25):
+    """End-to-end integration function"""
+    aqi = calculate_aqi_pm25(pm25)
+    category = classify_aqi(aqi)
+    return {"pm25": pm25, "aqi": aqi, "category": category}
+
+def run_tests():
+    print("Running Integration Tests...\n")
+
+    # Test cases: (input, expected_aqi, expected_category)
+    test_cases = [
+        (20, 50, "Good"),
+        (45, 100, "Moderate"),
+        (75, 200, "Poor"),
+        (150, 300, "Very Poor"),
+    ]
+
+    passed = 0
+
+    for i, (input_val, exp_aqi, exp_cat) in enumerate(test_cases, start=1):
+        result = get_air_quality(input_val)
+
+        try:
+            assert result["aqi"] == exp_aqi
+            assert result["category"] == exp_cat
+            print(f"Test {i} PASSED → Input: {input_val}")
+            passed += 1
+        except AssertionError:
+            print(f"Test {i} FAILED → Input: {input_val}")
+            print(f"  Expected: AQI={exp_aqi}, Category={exp_cat}")
+            print(f"  Got: {result}")
+
+    # Edge Case Test
+    try:
+        get_air_quality(-10)
+        print("Edge Test FAILED (negative value not caught)")
+    except ValueError:
+        print("Edge Test PASSED (invalid input handled)")
+
+    print(f"\n{passed}/{len(test_cases)} tests passed.")
+
+if __name__ == "__main__":
+    # Run integration tests
+    run_tests()
+
+    print("\nSample Run:")
+    user_input = float(input("Enter PM2.5 value: "))
+    result = get_air_quality(user_input)
+    print(f"AQI: {result['aqi']}, Category: {result['category']}")
